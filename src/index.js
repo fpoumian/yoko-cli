@@ -2,12 +2,23 @@
 
 import program from 'commander'
 import cosmicconfig from 'cosmiconfig'
-import judex from 'judex-component-generator'
+import judex, { addEventListeners } from 'judex-component-generator'
 
 import makeInit from './init'
+import createLogger from './logger'
 
+const logger = createLogger()
 const explorer = cosmicconfig('judex')
-const init = makeInit(judex, explorer, console)
+
+// addEventListeners('pluginsRegistered', plugins => {
+//   logger.info(plugins)
+// })
+//
+// addEventListeners('error', error => {
+//   logger.error(error)
+// })
+
+const init = makeInit(judex, explorer, logger)
 
 let componentNameValue
 
@@ -26,10 +37,4 @@ program
   .parse(process.argv)
 
 // Initialize app
-init(componentNameValue, {
-  container: program.container,
-  index: program.index,
-  stylesheet: program.stylesheet,
-  tests: program.tests,
-  es6class: program.es6class,
-})
+init(componentNameValue, Object.assign({}, program))

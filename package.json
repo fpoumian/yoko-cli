@@ -25,7 +25,7 @@
     "flow": "flow check",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "build": "babel src -d dist --ignore src/lib/**/__mocks__,src/**/__tests__",
+    "build": "babel src -d dist --ignore src/__tests__",
     "watch": "npm-watch",
     "patch": "npm version patch && npm publish",
     "minor": "npm version minor && npm publish",
@@ -57,6 +57,7 @@
     "scaffold"
   ],
   "dependencies": {
+    "chalk": "^2.2.0",
     "commander": "^2.11.0",
     "cosmiconfig": "^3.1.0"
   },
