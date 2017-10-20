@@ -1,10 +1,11 @@
+/* eslint-disable prefer-promise-reject-errors */
 // @flow
 
 import type { IConfigLoader, IGenerator, ILogger } from './interfaces'
 import messages from './messages'
 
 export default (
-  generatorFactory: Object => IGenerator,
+  createGenerator: Object => IGenerator,
   configLoader: IConfigLoader,
   logger: ILogger
 ) =>
@@ -26,7 +27,7 @@ export default (
         }
 
         try {
-          return generatorFactory(configSearchResult.config)
+          return createGenerator(configSearchResult.config)
         } catch (e) {
           let errorMessage
           if (e instanceof TypeError) {
@@ -34,10 +35,27 @@ export default (
           } else {
             errorMessage = messages.ON_GENERATE_ERROR
           }
-          return Promise.reject(errorMessage)
+          return Promise.reject(`${errorMessage}: ${e.message}`)
         }
       })
       .then((generator: IGenerator) => {
+        generator
+          .on('initGenerator', () => {
+            logger.info(messages.ON_INIT_GENERATOR)
+          })
+          .on('pluginsRegistered', plugins => {
+            logger.info(messages.ON_PLUGINS_REGISTERED)
+            logger.info(plugins)
+          })
+          .on('pluginsLoaded', plugins => {
+            logger.info(messages.ON_PLUGINS_LOADED)
+            logger.info(plugins)
+          })
+          .on('cannotLoadPlugin', pluginName => {
+            logger.warn(messages.ON_CANNOT_LOAD_PLUGIN)
+            logger.warn(pluginName)
+          })
+
         try {
           generator
             .generate(componentName, componentOptions)

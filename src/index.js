@@ -2,21 +2,13 @@
 
 import program from 'commander'
 import cosmicconfig from 'cosmiconfig'
-import judex, { addEventListeners } from 'judex-component-generator'
+import judex from 'judex-component-generator'
 
 import makeInit from './init'
 import createLogger from './logger'
 
 const logger = createLogger()
 const explorer = cosmicconfig('judex')
-
-// addEventListeners('pluginsRegistered', plugins => {
-//   logger.info(plugins)
-// })
-//
-// addEventListeners('error', error => {
-//   logger.error(error)
-// })
 
 const init = makeInit(judex, explorer, logger)
 

@@ -39,21 +39,32 @@ describe('init', () => {
       ),
     }
 
+    const initGeneratorEmitter = new EventEmitter()
+
     generator = {
+      on: jest.fn().mockImplementation((eventName, listener) => {
+        return initGeneratorEmitter.on(eventName, listener)
+      }),
       generate: jest.fn().mockImplementation(() => {
-        const eventEmitter = new EventEmitter()
+        const generateEmitter = new EventEmitter()
+        initGeneratorEmitter.emit('initGenerator')
+        initGeneratorEmitter.emit('pluginsRegistered', [1, 2, 3])
+        initGeneratorEmitter.emit('cannotLoadPlugin', [3])
+        initGeneratorEmitter.emit('pluginsLoaded', [1, 2])
         process.nextTick(() => {
-          eventEmitter.emit('start')
-          eventEmitter.emit('done', componentResultPaths)
+          generateEmitter.emit('start')
+          generateEmitter.emit('done', componentResultPaths)
         })
-        return eventEmitter
+        return generateEmitter
       }),
     }
     generatorFactory = jest.fn().mockReturnValue(generator)
     logger = {
       log: jest.fn(),
       error: jest.fn(),
+      warn: jest.fn(),
       info: jest.fn(),
+      success: jest.fn(),
     }
     init = makeInit(generatorFactory, configLoader, logger)
     process.exit = jest.fn()
@@ -89,6 +100,39 @@ describe('init', () => {
     })
   })
 
+  it('should call the logger.info method with generator init message', () => {
+    expect.assertions(1)
+    return init(COMPONENT_NAME, globalConfig).then(() => {
+      expect(logger.info).toHaveBeenCalledWith(messages.ON_INIT_GENERATOR)
+    })
+  })
+
+  it('should call the logger.info method with plugins registered message', () => {
+    expect.assertions(2)
+    return init(COMPONENT_NAME, globalConfig).then(() => {
+      expect(logger.info).toHaveBeenCalledWith(messages.ON_PLUGINS_REGISTERED)
+      expect(logger.info).toHaveBeenCalledWith([1, 2, 3])
+    })
+  })
+
+  it('should call the logger.info method with plugins loaded message', () => {
+    expect.assertions(2)
+    return init(COMPONENT_NAME, globalConfig).then(() => {
+      expect(logger.info).toHaveBeenCalledWith(messages.ON_PLUGINS_LOADED)
+      expect(logger.info).toHaveBeenCalledWith([1, 2])
+    })
+  })
+
+  describe('when the cannotLoadPlugin event is emitted', () => {
+    it('should call the logger.warn method with appropiate message', () => {
+      expect.assertions(2)
+      return init(COMPONENT_NAME, globalConfig).then(() => {
+        expect(logger.warn).toHaveBeenCalledWith(messages.ON_CANNOT_LOAD_PLUGIN)
+        expect(logger.warn).toHaveBeenCalledWith([3])
+      })
+    })
+  })
+
   it('should call the logger.info method with starting message', done => {
     expect.assertions(1)
     return init(COMPONENT_NAME, globalConfig).then(() => {
@@ -99,12 +143,12 @@ describe('init', () => {
     })
   })
 
-  it('should call the logger.info method with the succcess message and component paths', done => {
+  it('should call the logger.info method with the success message and component paths', done => {
     expect.assertions(2)
     return init(COMPONENT_NAME, globalConfig).then(() => {
       process.nextTick(() => {
-        expect(logger.info).toHaveBeenCalledWith(messages.ON_GENERATE_DONE)
-        expect(logger.info).toHaveBeenCalledWith(componentResultPaths.root)
+        expect(logger.success).toHaveBeenCalledWith(messages.ON_GENERATE_DONE)
+        expect(logger.success).toHaveBeenCalledWith(componentResultPaths.root)
         done()
       })
     })
@@ -166,7 +210,9 @@ describe('init', () => {
     it('should call the logger error method and the process.exit method with error code 1', () => {
       expect.assertions(2)
       return init(COMPONENT_NAME, {}).then(() => {
-        expect(logger.error).toHaveBeenCalledWith(messages.ON_BAD_CONFIG_ERROR)
+        expect(logger.error).toHaveBeenCalledWith(
+          messages.ON_BAD_CONFIG_ERROR + ': The error message'
+        )
         expect(process.exit).toHaveBeenCalledWith(1)
       })
     })
@@ -174,7 +220,11 @@ describe('init', () => {
 
   describe('when the generate method throws a TypeError', () => {
     beforeEach(() => {
+      const initGeneratorEmitter = new EventEmitter()
       generator = {
+        on: jest.fn().mockImplementation((eventName, listener) => {
+          return initGeneratorEmitter.on(eventName, listener)
+        }),
         generate: jest.fn().mockImplementation(() => {
           throw new TypeError('The error message')
         }),
@@ -187,7 +237,7 @@ describe('init', () => {
       expect.assertions(2)
       return init(COMPONENT_NAME, {}).then(() => {
         expect(logger.error).toHaveBeenCalledWith(
-          messages.ON_GENERATE_TYPE_ERROR
+          messages.ON_GENERATE_TYPE_ERROR + ': The error message'
         )
         expect(process.exit).toHaveBeenCalledWith(1)
       })
@@ -196,7 +246,11 @@ describe('init', () => {
 
   describe('when generate method emits an error', () => {
     beforeEach(() => {
+      const initGeneratorEmitter = new EventEmitter()
       generator = {
+        on: jest.fn().mockImplementation((eventName, listener) => {
+          return initGeneratorEmitter.on(eventName, listener)
+        }),
         generate: jest.fn().mockImplementation(() => {
           const eventEmitter = new EventEmitter()
           process.nextTick(() => {
