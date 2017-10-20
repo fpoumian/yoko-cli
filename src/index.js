@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import program from 'commander'
 import cosmicconfig from 'cosmiconfig'
 import judex from 'judex-component-generator'

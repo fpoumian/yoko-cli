@@ -73,6 +73,7 @@ export default (
               process.exit(1)
             })
         } catch (e) {
+          // eslint-disable-next-line no-unused-vars
           let errorMessage
           if (e instanceof TypeError) {
             errorMessage = messages.ON_GENERATE_TYPE_ERROR

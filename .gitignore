@@ -6,5 +6,6 @@ dist
 .vscode
 .temp
 *.log
+*.tgz
 profiling
 !/src/lib/Plugin/node_modules/

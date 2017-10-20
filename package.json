@@ -4,7 +4,6 @@
   "description": "Judex is a Component Generator.",
   "license": "MIT",
   "repository": "fpoumian/judex",
-  "main": "index.js",
   "author": {
     "name": "Fernando Poumián",
     "email": "fpoumian@gmail.com",
@@ -13,8 +12,12 @@
   "engines": {
     "node": ">=6"
   },
+  "bin": {
+    "judex": "./bin/judex.js"
+  },
   "files": [
     "dist",
+    "bin",
     "index.js"
   ],
   "scripts": {
