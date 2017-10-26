@@ -51,17 +51,26 @@ describe('init', () => {
         initGeneratorEmitter.emit('pluginsRegistered', [1, 2, 3])
         initGeneratorEmitter.emit('cannotLoadPlugin', [3])
         initGeneratorEmitter.emit('pluginsLoaded', [1, 2])
+
+        generateEmitter.on('start', () => {
+          return Promise.resolve().then(() => {
+            return generateEmitter.emit('done', componentResultPaths)
+          })
+        })
+        generateEmitter.on('done', paths => console.log(paths))
         process.nextTick(() => {
           generateEmitter.emit('start')
-          generateEmitter.emit('done', componentResultPaths)
         })
         return {
-          then(cb) {
-            return new Promise((resolve, reject) => {
-              initGeneratorEmitter.on('done', paths => resolve(cb(paths)))
-              initGeneratorEmitter.on('error', err => reject(cb(err)))
+          on: jest.fn().mockImplementation((eventName, listener) => {
+            generateEmitter.on(eventName, listener)
+            return this
+          }),
+          then: jest.fn().mockImplementation(cb => {
+            return new Promise(resolve => {
+              return generateEmitter.on('done', paths => resolve(cb(paths)))
             })
-          },
+          }),
         }
       }),
     }
@@ -152,11 +161,14 @@ describe('init', () => {
     })
   })
 
-  it('should call the logger.done method with the success message and component paths', () => {
+  xit('should call the logger.done method with the success message and component paths', done => {
     expect.assertions(2)
     return init(COMPONENT_NAME, globalConfig).then(() => {
-      expect(logger.done).toHaveBeenCalledWith(messages.ON_GENERATE_DONE)
-      expect(logger.infoAlt).toHaveBeenCalledWith(componentResultPaths.root)
+      process.nextTick(() => {
+        expect(logger.done).toHaveBeenCalledWith(messages.ON_GENERATE_DONE)
+        expect(logger.infoAlt).toHaveBeenCalledWith(componentResultPaths.root)
+        done()
+      })
     })
   })
 
