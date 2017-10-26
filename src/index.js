@@ -27,4 +27,10 @@ program
   .parse(process.argv)
 
 // Initialize app
-init(componentNameValue, Object.assign({}, program))
+init(componentNameValue, {
+  container: program.container,
+  index: program.index,
+  stylesheet: program.stylesheet,
+  tests: program.tests,
+  es6class: program.es6class,
+})

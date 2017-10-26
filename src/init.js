@@ -30,7 +30,7 @@ export default (
           return createGenerator(configSearchResult.config)
         } catch (e) {
           let errorMessage
-          if (e instanceof TypeError) {
+          if (e.name === 'BadConfigError') {
             errorMessage = messages.ON_BAD_CONFIG_ERROR
           } else {
             errorMessage = messages.ON_GENERATE_ERROR
@@ -44,46 +44,43 @@ export default (
             logger.info(messages.ON_INIT_GENERATOR)
           })
           .on('pluginsRegistered', plugins => {
-            logger.info(messages.ON_PLUGINS_REGISTERED)
-            logger.info(plugins)
+            if (
+              process.env.NODE_ENV === 'test' ||
+              process.env.NODE_ENV === 'development'
+            ) {
+              logger.info(messages.ON_PLUGINS_REGISTERED)
+              logger.info(plugins)
+            }
           })
           .on('pluginsLoaded', plugins => {
-            logger.info(messages.ON_PLUGINS_LOADED)
-            logger.info(plugins)
+            if (
+              process.env.NODE_ENV === 'test' ||
+              process.env.NODE_ENV === 'development'
+            ) {
+              logger.info(messages.ON_PLUGINS_LOADED)
+              logger.info(plugins)
+            }
           })
           .on('cannotLoadPlugin', pluginName => {
             logger.warn(messages.ON_CANNOT_LOAD_PLUGIN)
             logger.warn(pluginName)
           })
 
-        try {
-          generator
-            .generate(componentName, componentOptions)
-            .on('start', () => {
-              logger.info(messages.ON_GENERATE_START)
-            })
-            .on('done', paths => {
-              logger.success(messages.ON_GENERATE_DONE)
-              logger.success(paths.root)
-            })
-            .on('error', e => {
-              logger.error(messages.ON_GENERATE_ERROR)
-              logger.error(componentName)
-              logger.error(e)
-              process.exit(1)
-            })
-        } catch (e) {
-          // eslint-disable-next-line no-unused-vars
-          let errorMessage
-          if (e instanceof TypeError) {
-            errorMessage = messages.ON_GENERATE_TYPE_ERROR
-          } else {
-            errorMessage = messages.ON_GENERATE_ERROR
-          }
-          return Promise.reject(
-            `${messages.ON_GENERATE_TYPE_ERROR}: ${e.message}`
-          )
-        }
+        return generator
+          .generate(componentName, componentOptions)
+          .on('start', () => {
+            logger.info(messages.ON_GENERATE_START)
+          })
+          .on('fileWritten', path => {
+            logger.success(`File written at: ${path}`)
+          })
+          .on('warn', e => {
+            logger.warn(e)
+          })
+          .then(paths => {
+            logger.done(messages.ON_GENERATE_DONE)
+            logger.infoAlt(paths.root)
+          })
       })
       .catch(e => {
         logger.error(e)

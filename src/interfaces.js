@@ -15,7 +15,9 @@ export interface IConfigLoader {
 
 export interface ILogger {
   info(message: string): void;
+  infoAlt(message: string): void;
   error(message: string): void;
   success(message: string): void;
   warn(message: string): void;
+  done(message: string): void;
 }

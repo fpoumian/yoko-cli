@@ -5,37 +5,49 @@ import type { ILogger } from './interfaces'
 
 export default function createLogger(): ILogger {
   const themes = {
-    ERROR: chalk.whiteBright.bgRed.bold,
-    INFO: chalk.whiteBright.bgBlue.bold,
-    SUCCESS: chalk.whiteBright.bgGreen.bold,
-    WARN: chalk.whiteBright.bgYellow.bold,
+    error: chalk.whiteBright.bgRed,
+    info: chalk.blue,
+    infoAlt: chalk.whiteBright.bgBlue,
+    success: chalk.green,
+    warn: chalk.yellow,
+    done: chalk.whiteBright.bgGreen,
   }
 
-  function base(level: string, message: any) {
+  function base(level: string, message: any, label = '') {
     const theme = themes[level]
-    console.log(theme(`${level}:`) + ' ' + chalk.whiteBright.bold(message))
+    console.log(theme(` ${label || level} `) + ' ' + chalk.whiteBright(message))
   }
 
   function error(message: any) {
-    base('ERROR', message)
+    base('error', message, 'ERROR')
   }
 
   function info(message: any) {
-    base('INFO', message)
+    base('info', message)
+  }
+
+  function infoAlt(message: any) {
+    base('infoAlt', message, 'INFO')
   }
 
   function warn(message: any) {
-    base('WARN', message)
+    base('warn', message)
   }
 
   function success(message: any) {
-    base('SUCCESS', message)
+    base('success', message)
+  }
+
+  function done(message: any) {
+    base('done', message, 'DONE')
   }
 
   return {
     error,
     info,
+    infoAlt,
     success,
     warn,
+    done,
   }
 }

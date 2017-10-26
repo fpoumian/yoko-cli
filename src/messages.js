@@ -12,6 +12,7 @@ const messages = {
   ON_GENERATE_ERROR:
     'There was an error while trying to generate this component:',
   ON_GENERATE_TYPE_ERROR: 'TypeError message',
+  ON_GENERATE_BAD_OPTIONS_ERROR: 'BadOptionsError message',
 }
 
 export default messages
