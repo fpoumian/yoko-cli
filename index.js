@@ -1,3 +1,1 @@
-throw new Error(
-  "Use the 'judex-component-generator' package instead of 'judex'"
-)
+throw new Error("Use the 'yoko-core' package instead of 'yoko-cli'")

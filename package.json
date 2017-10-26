@@ -1,9 +1,9 @@
 {
-  "name": "judex",
+  "name": "yoko-cli",
   "version": "0.1.0",
-  "description": "Judex is a Component Generator.",
+  "description": "Command Line Interface for Yoko Component Generator",
   "license": "MIT",
-  "repository": "fpoumian/judex",
+  "repository": "fpoumian/yoko-cli",
   "author": {
     "name": "Fernando Poumián",
     "email": "fpoumian@gmail.com",
@@ -13,7 +13,7 @@
     "node": ">=6"
   },
   "bin": {
-    "judex": "./bin/judex.js"
+    "yoko": "./bin/yoko.js"
   },
   "files": [
     "dist",

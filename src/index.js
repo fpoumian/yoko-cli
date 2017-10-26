@@ -1,14 +1,14 @@
 import program from 'commander'
 import cosmicconfig from 'cosmiconfig'
-import judex from 'judex-component-generator'
+import yoko from 'yoko-core'
 
 import makeInit from './init'
 import createLogger from './logger'
 
 const logger = createLogger()
-const explorer = cosmicconfig('judex')
+const explorer = cosmicconfig('yoko')
 
-const init = makeInit(judex, explorer, logger)
+const init = makeInit(yoko, explorer, logger)
 
 let componentNameValue
 

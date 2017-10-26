@@ -1,3 +1,3 @@
-# Judex Component Generator
+# Yoko CLI
 
 WIP
