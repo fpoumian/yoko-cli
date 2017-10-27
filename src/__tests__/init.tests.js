@@ -57,7 +57,6 @@ describe('init', () => {
             return generateEmitter.emit('done', componentResultPaths)
           })
         })
-        generateEmitter.on('done', paths => console.log(paths))
         process.nextTick(() => {
           generateEmitter.emit('start')
         })
