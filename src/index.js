@@ -1,6 +1,6 @@
 import program from 'commander'
 import cosmicconfig from 'cosmiconfig'
-import yoko from 'yoko-core'
+import yoko from 'yoko'
 
 import makeInit from './init'
 import createLogger from './logger'
