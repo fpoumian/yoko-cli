@@ -1,6 +1,6 @@
 {
   "name": "yoko-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Command Line Interface for Yoko Component Generator",
   "license": "MIT",
   "repository": "fpoumian/yoko-cli",
