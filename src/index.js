@@ -1,6 +1,7 @@
 import program from 'commander'
 import cosmicconfig from 'cosmiconfig'
 import yoko from 'yoko'
+import { version } from '../package.json'
 
 import makeInit from './init'
 import createLogger from './logger'
@@ -14,7 +15,7 @@ let componentNameValue
 
 // Read Command Line Arguments
 program
-  .version('0.1.0')
+  .version(version)
   .arguments('<componentName>')
   .action(function(componentName) {
     componentNameValue = componentName
